@@ -108,6 +108,12 @@ export default function Auth() {
   const [error, setError]       = useState('')
   const [success, setSuccess]   = useState('')
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) navigate('/dashboard', { replace: true })
+    })
+  }, [])
+  
   const isLogin  = mode === 'login'
   const isSignup = mode === 'signup'
 

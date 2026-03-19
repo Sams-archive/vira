@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { Play, ArrowRight, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
