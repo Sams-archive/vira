@@ -1,85 +1,69 @@
-const express = require('express');
-const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-const youtubedl = require('yt-dlp-exec');
-const fs = require('fs');
-const path = require('path');
+import 'express-async-errors'
+import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
+import morgan from 'morgan'
+import dotenv from 'dotenv'
 
-// 1. Load the environment variables
-require('dotenv').config();
+dotenv.config()
 
-// 2. DEBUG LOGS (Check your terminal after saving)
-console.log("--- VIRA BACKEND STARTUP ---");
-console.log("Checking SUPABASE_URL:", process.env.SUPABASE_URL ? "FOUND ✅" : "NOT FOUND ❌");
-console.log("Checking SUPABASE_KEY:", process.env.SUPABASE_SERVICE_ROLE_KEY ? "FOUND ✅" : "NOT FOUND ❌");
-console.log("----------------------------");
+// ── Route imports ──────────────────────────────────────────────────────────
+import authRoutes     from './src/routes/auth.js'
+import projectRoutes  from './src/routes/projects.js'
+import clipRoutes     from './src/routes/clips.js'
+import uploadRoutes   from './src/routes/upload.js'
+import aiRoutes       from './src/routes/ai.js'
+import voiceRoutes    from './src/routes/voice.js'
+import exportRoutes   from './src/routes/exports.js'
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const app  = express()
+const PORT = process.env.PORT || 4000
 
-// 3. Stop the crash with a helpful message
-if (!supabaseUrl || !supabaseKey) {
-  console.error("CRITICAL ERROR: Supabase keys are missing in .env file. Fix this and restart.");
-  process.exit(1); 
-}
+// ── Middleware ─────────────────────────────────────────────────────────────
+app.use(helmet())
+app.use(morgan('dev'))
+app.use(cors({
+  origin:      process.env.CLIENT_URL || 'http://localhost:3001',
+  credentials: true,
+}))
+app.use(express.json({ limit: '50mb' }))
+app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+// ── Health check ───────────────────────────────────────────────────────────
+app.get('/health', (_req, res) => {
+  res.json({
+    status:  'ok',
+    message: 'VIRA API is running',
+    version: '1.0.0',
+    time:    new Date().toISOString(),
+  })
+})
 
-const app = express();
-// ... rest of your code
+// ── Routes ─────────────────────────────────────────────────────────────────
+app.use('/api/auth',     authRoutes)
+app.use('/api/projects', projectRoutes)
+app.use('/api/clips',    clipRoutes)
+app.use('/api/upload',   uploadRoutes)
+app.use('/api/ai',       aiRoutes)
+app.use('/api/voice',    voiceRoutes)
+app.use('/api/exports',  exportRoutes)
 
-// Endpoint to import video from URL
-app.post('/api/import-url', async (req, res) => {
-  const { url, userId } = req.body;
+// ── 404 handler ────────────────────────────────────────────────────────────
+app.use((_req, res) => {
+  res.status(404).json({ error: 'Route not found' })
+})
 
-  try {
-    const tempFilePath = path.join(__dirname, `temp_${Date.now()}.mp4`);
-    
-    // 1. Download video using yt-dlp
-    await youtubedl(url, {
-      output: tempFilePath,
-      format: 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-    });
+// ── Global error handler ───────────────────────────────────────────────────
+app.use((err, _req, res, _next) => {
+  console.error('❌ Error:', err.message)
+  res.status(err.status || 500).json({
+    error:   err.message || 'Internal server error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+  })
+})
 
-    // 2. Read file and upload to Supabase Storage
-    const fileBuffer = fs.readFileSync(tempFilePath);
-    const fileName = `${userId}/imports/${Date.now()}.mp4`;
-
-    const { data, error } = await supabase.storage
-      .from('vira-media')
-      .upload(fileName, fileBuffer, { contentType: 'video/mp4' });
-
-    // 3. Cleanup temp file
-    fs.unlinkSync(tempFilePath);
-
-    if (error) throw error;
-
-    // 4. Save project to DB
-    const { data: project, error: dbError } = await supabase
-      .from('projects')
-      .insert([{ user_id: userId, title: 'Imported Video', original_video_url: data.path }])
-      .select();
-
-    res.status(200).json({ message: 'Import successful', project });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to import video' });
-  }
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-app.post('/api/process-upload', async (req, res) => {
-  const { storagePath, userId } = req.body;
-  
-  try {
-    console.log(`Processing file at: ${storagePath} for user: ${userId}`);
-    
-    // This is where Phase 5 (FFmpeg) and Phase 6 (AI) will eventually go.
-    // For now, we just acknowledge receipt.
-    res.status(200).json({ message: 'File received and queued for processing' });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to queue processing' });
-  }
-});
+// ── Start server ───────────────────────────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`✅ VIRA API running on http://localhost:${PORT}`)
+  console.log(`📋 Health check: http://localhost:${PORT}/health`)
+})

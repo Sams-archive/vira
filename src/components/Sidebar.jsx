@@ -1,46 +1,196 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+// import { Link, useLocation, useNavigate } from "react-router-dom";
+// import {
+//   LayoutDashboard,
+//   Sparkles,
+//   Link2,
+//   Scissors,
+//   Mic2,
+//   Type,
+//   Film,
+//   Download,
+//   LogOut,
+//   ChevronRight,
+//   Zap,
+// } from "lucide-react";
+// import { supabase } from "../lib/supabase";
+
+// const mainNav = [
+//   { icon: LayoutDashboard, label: "Projects",      href: "/dashboard" },
+//   { icon: Sparkles,        label: "Generate Video", href: "/generate"  },
+//   { icon: Link2,           label: "Import Video",   href: "/import"    },
+//   { icon: Scissors,        label: "AI Clips",       href: "/clips"     },
+// ];
+
+// const toolsNav = [
+//   { icon: Mic2,     label: "Voice Generator", href: "/voice"     },
+//   { icon: Type,     label: "Caption Studio",  href: "/captions"  },
+//   { icon: Film,     label: "Editor",          href: "/editor"    },
+//   { icon: Download, label: "Exports",         href: "/dashboard" },
+// ];
+
+// export default function Sidebar() {
+//   const location = useLocation();
+//   const navigate = useNavigate();        // ✅ inside the component
+
+//   const isActive = (href) => location.pathname === href;
+
+//   const handleSignOut = async () => {    // ✅ inside the component
+//     await supabase.auth.signOut();
+//     navigate("/auth");
+//   };
+
+//   return (
+//     <aside className="w-56 min-h-screen bg-off-black border-r border-white/[0.06] flex flex-col">
+//       {/* Logo */}
+//       <div className="px-5 py-5 border-b border-white/[0.06]">
+//         <Link to="/" className="flex items-center gap-2 no-underline">
+//           <div className="w-6 h-6 rounded-md bg-accent flex items-center justify-center">
+//             <span className="text-white font-display font-bold text-[10px]">V</span>
+//           </div>
+//           <span className="font-display font-extrabold text-base tracking-tight text-white">
+//             VIR<span className="text-accent2">A</span>
+//           </span>
+//         </Link>
+//       </div>
+
+//       {/* Plan badge */}
+//       <div className="px-3 py-3">
+//         <div className="bg-accent/10 border border-accent/20 rounded-xl px-3 py-2.5 flex items-center justify-between">
+//           <div className="flex items-center gap-2">
+//             <Zap size={12} className="text-yellow-400" />
+//             <span className="text-xs font-medium text-white/70">Free Plan</span>
+//           </div>
+//           <Link to="/pricing" className="text-[10px] text-accent no-underline hover:underline">
+//             Upgrade
+//           </Link>
+//         </div>
+//       </div>
+
+//       {/* Main nav */}
+//       <div className="px-1 py-2">
+//         <p className="px-3 py-1.5 text-[10px] font-medium tracking-widest uppercase text-white/25 mb-1">
+//           Workspace
+//         </p>
+//         {mainNav.map(({ icon: Icon, label, href }) => (
+//           <Link
+//             key={href}
+//             to={href}
+//             className={`sidebar-item no-underline ${isActive(href) ? "active" : ""}`}
+//           >
+//             <Icon size={15} className="flex-shrink-0" />
+//             <span>{label}</span>
+//             {isActive(href) && (
+//               <ChevronRight size={12} className="ml-auto opacity-50" />
+//             )}
+//           </Link>
+//         ))}
+//       </div>
+
+//       {/* Tools nav */}
+//       <div className="px-1 py-2">
+//         <p className="px-3 py-1.5 text-[10px] font-medium tracking-widest uppercase text-white/25 mb-1">
+//           Tools
+//         </p>
+//         {toolsNav.map(({ icon: Icon, label, href }) => (
+//           <Link
+//             key={href + label}
+//             to={href}
+//             className={`sidebar-item no-underline ${isActive(href) ? "active" : ""}`}
+//           >
+//             <Icon size={15} className="flex-shrink-0" />
+//             <span>{label}</span>
+//           </Link>
+//         ))}
+//       </div>
+
+//       {/* Bottom — user + sign out */}
+//       <div className="mt-auto border-t border-white/[0.06] px-3 py-4">
+//         <div className="flex items-center gap-3 px-2">
+//           <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center text-[11px] font-bold font-display text-accent">
+//             AJ
+//           </div>
+//           <div className="flex-1 min-w-0">
+//             <p className="text-xs font-medium text-white truncate">Alex Johnson</p>
+//             <p className="text-[10px] text-white/40 truncate">alex@example.com</p>
+//           </div>
+//           <button
+//             onClick={handleSignOut}
+//             title="Sign out"
+//             className="text-white/30 hover:text-rose-400 cursor-pointer transition-colors flex-shrink-0 bg-transparent border-0"
+//           >
+//             <LogOut size={13} />
+//           </button>
+//         </div>
+//       </div>
+//     </aside>
+//   );
+// }
+
+
+import { useState, useEffect } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
-  LayoutDashboard,
-  Sparkles,
-  Link2,
-  Scissors,
-  Mic2,
-  Type,
-  Film,
-  Download,
-  LogOut,
-  ChevronRight,
-  Zap,
-} from "lucide-react";
-import { supabase } from "../lib/supabase";
+  LayoutDashboard, Sparkles, Link2, Scissors,
+  Mic2, Type, Film, Download, LogOut, ChevronRight, Zap
+} from 'lucide-react'
+import { supabase } from '../lib/supabase'
 
 const mainNav = [
-  { icon: LayoutDashboard, label: "Projects",      href: "/dashboard" },
-  { icon: Sparkles,        label: "Generate Video", href: "/generate"  },
-  { icon: Link2,           label: "Import Video",   href: "/import"    },
-  { icon: Scissors,        label: "AI Clips",       href: "/clips"     },
-];
+  { icon: LayoutDashboard, label: 'Projects',      href: '/dashboard' },
+  { icon: Sparkles,        label: 'Generate Video', href: '/generate'  },
+  { icon: Link2,           label: 'Import Video',   href: '/import'    },
+  { icon: Scissors,        label: 'AI Clips',       href: '/clips'     },
+]
 
 const toolsNav = [
-  { icon: Mic2,     label: "Voice Generator", href: "/voice"     },
-  { icon: Type,     label: "Caption Studio",  href: "/captions"  },
-  { icon: Film,     label: "Editor",          href: "/editor"    },
-  { icon: Download, label: "Exports",         href: "/dashboard" },
-];
+  { icon: Mic2,     label: 'Voice Generator', href: '/voice'     },
+  { icon: Type,     label: 'Caption Studio',  href: '/captions'  },
+  { icon: Film,     label: 'Editor',          href: '/editor'    },
+  { icon: Download, label: 'Exports',         href: '/dashboard' },
+]
 
 export default function Sidebar() {
-  const location = useLocation();
-  const navigate = useNavigate();        // ✅ inside the component
+  const location = useLocation()
+  const navigate  = useNavigate()
+  const [user, setUser] = useState(null)
 
-  const isActive = (href) => location.pathname === href;
+  useEffect(() => {
+    // Get the current logged in user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user)
+    })
 
-  const handleSignOut = async () => {    // ✅ inside the component
-    await supabase.auth.signOut();
-    navigate("/auth");
-  };
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const isActive = (href) => location.pathname === href
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    navigate('/auth')
+  }
+
+  // Get initials from name or email
+  const getInitials = () => {
+    if (!user) return '?'
+    const name = user.user_metadata?.full_name || user.email || ''
+    return name.slice(0, 2).toUpperCase()
+  }
+
+  // Get display name
+  const getDisplayName = () => {
+    if (!user) return 'Loading...'
+    return user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
+  }
 
   return (
     <aside className="w-56 min-h-screen bg-off-black border-r border-white/[0.06] flex flex-col">
+
       {/* Logo */}
       <div className="px-5 py-5 border-b border-white/[0.06]">
         <Link to="/" className="flex items-center gap-2 no-underline">
@@ -75,13 +225,11 @@ export default function Sidebar() {
           <Link
             key={href}
             to={href}
-            className={`sidebar-item no-underline ${isActive(href) ? "active" : ""}`}
+            className={`sidebar-item no-underline ${isActive(href) ? 'active' : ''}`}
           >
             <Icon size={15} className="flex-shrink-0" />
             <span>{label}</span>
-            {isActive(href) && (
-              <ChevronRight size={12} className="ml-auto opacity-50" />
-            )}
+            {isActive(href) && <ChevronRight size={12} className="ml-auto opacity-50" />}
           </Link>
         ))}
       </div>
@@ -95,7 +243,7 @@ export default function Sidebar() {
           <Link
             key={href + label}
             to={href}
-            className={`sidebar-item no-underline ${isActive(href) ? "active" : ""}`}
+            className={`sidebar-item no-underline ${isActive(href) ? 'active' : ''}`}
           >
             <Icon size={15} className="flex-shrink-0" />
             <span>{label}</span>
@@ -103,15 +251,15 @@ export default function Sidebar() {
         ))}
       </div>
 
-      {/* Bottom — user + sign out */}
+      {/* Bottom — real user info */}
       <div className="mt-auto border-t border-white/[0.06] px-3 py-4">
         <div className="flex items-center gap-3 px-2">
-          <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center text-[11px] font-bold font-display text-accent">
-            AJ
+          <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center text-[11px] font-bold font-display text-accent flex-shrink-0">
+            {getInitials()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-white truncate">Alex Johnson</p>
-            <p className="text-[10px] text-white/40 truncate">alex@example.com</p>
+            <p className="text-xs font-medium text-white truncate">{getDisplayName()}</p>
+            <p className="text-[10px] text-white/40 truncate">{user?.email || ''}</p>
           </div>
           <button
             onClick={handleSignOut}
@@ -123,5 +271,5 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
-  );
+  )
 }
