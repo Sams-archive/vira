@@ -85,7 +85,7 @@ export default function HeroSection() {
 
             <div className="flex flex-wrap gap-3 mb-12">
               <Link
-                to="/dashboard"
+                to="/auth"
                 className="btn-primary flex items-center gap-2 no-underline"
               >
                 Try VIRA Free

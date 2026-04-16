@@ -120,18 +120,15 @@ export default function Navbar() {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            to="/dashboard"
-            className="text-sm text-white/60 hover:text-white transition-colors no-underline"
-          >
-            Sign in
-          </Link>
-          <Link
-            to="/dashboard"
-            className="bg-accent text-white text-sm font-medium px-4 py-2 rounded-lg hover:opacity-85 transition-all duration-200 hover:-translate-y-px no-underline"
-          >
-            Start free
-          </Link>
+         <Link to="/auth" className="text-sm text-white/60 hover:text-white transition-colors no-underline">
+  Sign in
+</Link>
+<Link
+  to="/auth"
+  className="bg-accent text-white text-sm font-medium px-4 py-2 rounded-lg hover:opacity-85 transition-all duration-200 hover:-translate-y-px no-underline"
+>
+  Start free
+</Link>
         </div>
 
         {/* Mobile toggle */}

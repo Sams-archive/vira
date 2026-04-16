@@ -12,10 +12,10 @@ const router = Router()
 
 router.use(requireAuth)
 
-router.get('/',       getClips)    // GET  /api/clips
-router.get('/:id',    getClip)     // GET  /api/clips/:id
-router.post('/',      createClip)  // POST /api/clips
-router.patch('/:id',  updateClip)  // PATCH /api/clips/:id
-router.delete('/:id', deleteClip)  // DELETE /api/clips/:id
+router.get('/',       getClips)
+router.get('/:id',    getClip)
+router.post('/',      createClip)
+router.patch('/:id',  updateClip)
+router.delete('/:id', deleteClip)
 
 export default router

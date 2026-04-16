@@ -6,7 +6,7 @@ const router = Router()
 
 router.use(requireAuth)
 
-router.get('/voices',   getVoices)      // GET  /api/voice/voices
-router.post('/generate', generateVoice) // POST /api/voice/generate
+router.get('/voices',    getVoices)      // GET  /api/voice/voices
+router.post('/generate', generateVoice)  // POST /api/voice/generate
 
 export default router
